@@ -1,0 +1,3 @@
+#!/bin/sh
+
+/usr/sbin/ejabberdctl --auth munin chimc.ua MuN321 send_message_chat munin@chimc.ua oleg@chimc.ua "$1"
