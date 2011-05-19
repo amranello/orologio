@@ -1,0 +1,84 @@
+{fetch, [
+         {ignore, false},
+         {time, 60000},
+         {type, spawn},
+         {env, [
+                {"host", "82.207.117.13 google.com ya.ru"}
+                %{"host", "82.207.117.13 google.com 192.168.2.229"}
+               ]}
+        ]}.
+{limit, [
+          {ignore, false},
+          {exprs, [
+                   {"site1", "Val > 0."},
+                   {"site2", "Val > 0."},
+                   {"site3", "Val > 0."}
+                  ]},
+          {exprs_def, [
+                       {"site1", true},
+                       {"site2", true},
+                       {"site3", true}
+                      ]},
+          {label, [
+                   {"site1", "mlybor_inet"},
+                   {"site2", "google.com"},
+                   {"site3", "ya.ru"}
+                  ]}
+         ]}.
+{graph, [
+          {ignore, false},
+          {elems, [
+                   {"site1", 'GAUGE', [120, 0, 500]},
+                   {"site2", 'GAUGE', [120, 0, 500]},
+                   {"site3", 'GAUGE', [120, 0, 500]}
+                  ]},
+          {def, [
+                 {"site1", 'LAST'},
+                 {"site2", 'LAST'},
+                 {"site3", 'LAST'}
+                ]},
+          {vdef, [
+                  {"site1", "vsite1", 'LAST'},
+                  {"site2", "vsite2", 'LAST'},
+                  {"site3", "vsite3", 'LAST'}
+                 ]},
+          {gelem, [
+                   {'LINE', [
+                             {width, 2},
+                             {value, "site1"},
+                             {color, "0000FF"},
+                             {display, "mlybor"}
+                            ]},
+                   {'COMMENT', [{text, "LAST "}]},
+                   {'GPRINT', [
+                               {value, "vsite1"},
+                               {text, "%lf%s"}
+                              ]},
+                   {'LINE', [
+                             {width, 2},
+                             {value, "site2"},
+                             {color, "00FF00"},
+                             {display, "google.com"}
+                            ]},
+                   {'COMMENT', [{text, "LAST "}]},
+                   {'GPRINT', [
+                               {value, "vsite2"},
+                               {text, "%lf%s"}
+                              ]},
+                   {'LINE', [
+                             {width, 2},
+                             {value, "site3"},
+                             {color, "FF0000"},
+                             {display, "ya.ru"}
+                            ]},
+                   {'COMMENT', [{text, "LAST "}]},
+                   {'GPRINT', [
+                               {value, "vsite3"},
+                               {text, "%lf%s"}
+                              ]}
+                  ]},
+          {options_graph, [
+                           {label, "Multiping"},
+                           {vlabel, "time"}
+                          ]}
+         ]}.

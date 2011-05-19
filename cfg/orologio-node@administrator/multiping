@@ -1,0 +1,49 @@
+{fetch, [
+         {ignore, false},
+         {time, 60000},
+         {type, spawn},
+         {env, [
+                {"host", "192.168.2.235"}
+               ]}
+        ]}.
+{limit, [
+          {ignore, false},
+          {exprs, [
+                   {"site1", "Val > 0."}
+                  ]},
+          {exprs_def, [
+                       {"site1", true}
+                      ]},
+          {label, [
+                   {"site1", "mlybor_gate"}
+                  ]}
+         ]}.
+{graph, [
+          {ignore, false},
+          {elems, [
+                   {"site1", 'GAUGE', [120, 0, 500]}
+                  ]},
+          {def, [
+                 {"site1", 'LAST'}
+                ]},
+          {vdef, [
+                  {"site1", "vsite1", 'LAST'}
+                 ]},
+          {gelem, [
+                   {'LINE', [
+                             {width, 2},
+                             {value, "site1"},
+                             {color, "0000FF"},
+                             {display, "gate"}
+                            ]},
+                   {'COMMENT', [{text, "LAST "}]},
+                   {'GPRINT', [
+                               {value, "vsite1"},
+                               {text, "%lf%s"}
+                              ]}
+                  ]},
+          {options_graph, [
+                           {label, "Multiping"},
+                           {vlabel, "time"}
+                          ]}
+         ]}.

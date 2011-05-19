@@ -1,0 +1,84 @@
+
+=INFO REPORT==== 12-Apr-2011::11:28:55 ===
+    <<"orologio-node@gate_fetch_multiping">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:55 ===
+    <<"orologio-node@administrator_fetch_multiping">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:55 ===
+    <<"orologio-node@administrator_fetch_multiping_server">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:55 ===
+    <<"orologio-node@administrator_fetch_multiping_kiev">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:55 ===
+    <<"orologio-node@administrator_fetch_multiping_inet">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@administrator_limit_multiping_server">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@administrator_limit_multiping">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@administrator_limit_multiping_kiev">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@gate_limit_multiping">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@administrator_limit_multiping_inet">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@gate_graph_multiping">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@gate_notify_multiping">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@administrator_notify_log-test">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@administrator_notify_multiping">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@administrator_notify_multiping_kiev">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"default_notify_default">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@administrator_notify_multiping_server">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@administrator_notify_multiping_inet">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"default_checknod_default">>: <<"Started">>
+
+=ERROR REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@gate_graph_multiping">>: " creating '/home/amranello/projects/orologio/rrddb/orologio-node@gate/multiping.rrd': Ð¤Ð°Ð¹Ð» Ñ\\201Ñ\\203Ñ\\211ÐµÑ\\201Ñ\\202Ð²Ñ\\203ÐµÑ\\202\""
+
+=INFO REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@administrator_graph_multiping_server">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@administrator_graph_multiping">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@administrator_graph_multiping_inet">>: <<"Started">>
+
+=INFO REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@administrator_graph_multiping_kiev">>: <<"Started">>
+
+=ERROR REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@administrator_graph_multiping_server">>: " creating '/home/amranello/projects/orologio/rrddb/orologio-node@administrator/multiping_server.rrd': Ð¤Ð°Ð¹Ð» Ñ\\201Ñ\\203Ñ\\211ÐµÑ\\201Ñ\\202Ð²Ñ\\203ÐµÑ\\202\""
+
+=ERROR REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@administrator_graph_multiping_kiev">>: " creating '/home/amranello/projects/orologio/rrddb/orologio-node@administrator/multiping_kiev.rrd': Ð¤Ð°Ð¹Ð» Ñ\\201Ñ\\203Ñ\\211ÐµÑ\\201Ñ\\202Ð²Ñ\\203ÐµÑ\\202\""
+
+=ERROR REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@administrator_graph_multiping">>: " creating '/home/amranello/projects/orologio/rrddb/orologio-node@administrator/multiping.rrd': Ð¤Ð°Ð¹Ð» Ñ\\201Ñ\\203Ñ\\211ÐµÑ\\201Ñ\\202Ð²Ñ\\203ÐµÑ\\202\""
+
+=ERROR REPORT==== 12-Apr-2011::11:28:56 ===
+    <<"orologio-node@administrator_graph_multiping_inet">>: " creating '/home/amranello/projects/orologio/rrddb/orologio-node@administrator/multiping_inet.rrd': Ð¤Ð°Ð¹Ð» Ñ\\201Ñ\\203Ñ\\211ÐµÑ\\201Ñ\\202Ð²Ñ\\203ÐµÑ\\202\""

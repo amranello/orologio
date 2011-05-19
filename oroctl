@@ -1,0 +1,76 @@
+#!/bin/sh
+ODIR="/home/amranello/projects/orologio"
+NOD="orologio@administrator"
+CFG="ebin/orologio"
+RUN="orologio"
+
+start()
+{
+  cd "$ODIR"
+  LOGN="erlang_"`date +%F`""
+  mv ./log/erlang ./log/$LOGN
+  erl -boot start_sasl -sname $NOD -pa ebin -config $CFG -s $RUN -noinput -detached -heart
+  #erl -sname $NOD -pa ebin -config $CFG -s $RUN -noinput -detached -heart
+}
+
+run()
+{
+  cd "$ODIR"
+  erl -sname $NOD -pa ebin -config $CFG -s $RUN
+}
+
+shell()
+{
+  erl -sname shell_$NOD -hidden -remsh $NOD
+}
+
+ctl()
+{
+  cd "$ODIR"
+  erl -sname ctl_$NOD -pa ebin -noinput -hidden -s orologio_ctl -extra $NOD $@
+}
+
+stop()
+{
+  ctl stop
+}
+
+graph()
+{
+  ctl graph $@
+}
+
+graph_all()
+{
+  ctl graph_all $@
+}
+
+usage()
+{
+  echo "oroctl start, stop, run, shell, graph"
+  exit
+}
+
+case $1 in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  run)
+    run
+    ;;
+  shell)
+    shell
+    ;;
+  graph)
+    graph $2 $3 $4 $5
+    ;;
+  graph_all)
+    graph_all $2 $3
+    ;;
+  *)
+    usage
+    ;;
+esac

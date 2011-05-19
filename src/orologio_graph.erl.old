@@ -1,0 +1,479 @@
+%%% Copyright 2009 Andrew Thompson <andrew@hijacked.us>. All rights reserved.
+%%%
+%%% Redistribution and use in source and binary forms, with or without
+%%% modification, are permitted provided that the following conditions are met:
+%%%
+%%%   1. Redistributions of source code must retain the above copyright notice,
+%%%      this list of conditions and the following disclaimer.
+%%%   2. Redistributions in binary form must reproduce the above copyright
+%%%      notice, this list of conditions and the following disclaimer in the
+%%%      documentation and/or other materials provided with the distribution.
+%%%
+%%% THIS SOFTWARE IS PROVIDED BY THE FREEBSD PROJECT ``AS IS'' AND ANY EXPRESS OR
+%%% IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+%%% MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+%%% EVENT SHALL THE FREEBSD PROJECT OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+%%% INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+%%% (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+%%% LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+%%% ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+%%% (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+%%% SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+% @doc An erlang module to interface with rrdtool's remote control mode as an
+% erlang port.
+-module(orologio_graph).
+
+-behaviour(gen_server).
+
+% public API
+-export([
+		start_link/1,
+%		stop/1,
+		create/2,
+		update/2,
+		graph/2,
+		graph/3
+]).
+
+% gen_server callbacks
+-export([init/1,
+		handle_call/3,
+		handle_cast/2,
+		handle_info/2,
+		terminate/2,
+		code_change/3
+]).
+
+-include("include/orologio.hrl").
+
+-define(STORE_TYPES,
+	['GAUGE', 'COUNTER', 'DERIVE', 'ABSOLUTE', 'COMPUTE']).
+
+-define(GRAPH_FUN,
+	['MIN', 'MAX', 'AVERAGE', 'TOTAL', 'LAST']).
+	
+-define(GRAPH_TYP,
+	['COMMENT', 'GPRINT', 'LINE', 'AREA']).
+
+-record(graph_state, {host, elem, fn, port, mem, rrd}).
+
+% public API
+
+start_link({_Host, <<"default">>}) ->
+	ignore;
+start_link({Host, Elem}) ->
+        gen_server:start_link({local, orologio_utils:gen_name_mod({graph, Host, Elem})},
+	                      ?MODULE, {Host, Elem}, []).
+
+%stop(Name) ->
+%	gen_server:call(orologio_utils:gen_name_mod(Name), stop).
+
+create({_Host, _Elem} = Name, {Datastores, RRAs, Options}) ->
+	send_event(Name, {create, Datastores, RRAs, Options});
+create(Name, {Datastores, RRAs, Options}) ->
+	gen_server:cast(Name, {create, Datastores, RRAs, Options}).
+
+update({_Host, _Elem} = Name, {DatastoreValues}) ->
+	send_event(Name, {update, DatastoreValues, n});
+update({_Host, _Elem} = Name, {DatastoreValues, Time}) ->
+	send_event(Name, {update, DatastoreValues, Time});
+update(Name, {DatastoreValues, Time}) ->
+	gen_server:cast(Name, {update, DatastoreValues, Time}).
+
+graph({_Host, _Elem} = Name, {FImg, DDef, VDef, GElem, Options}) ->
+	send_event(Name, {graph, FImg, DDef, VDef, GElem, Options});
+graph(Name, {FImg, DDef, VDef, GElem, Options}) ->
+	gen_server:cast(Name, {graph, FImg, DDef, VDef, GElem, Options}).
+
+graph({Host, Elem}, Img, Opts) ->
+  graph({Host, Elem}, {Img,
+                       orologio_utils:get_conf([Host, Elem], {graph, def, []}),
+                       orologio_utils:get_conf([Host, Elem], {graph, vdef, []}),
+                       orologio_utils:get_conf([Host, Elem], {graph, gelem, []}),
+                       orologio_utils:get_conf([Host, Elem], {graph, options_graph, []}) ++ Opts}).
+
+% gen_server callbacks
+
+%% @hidden
+init({Host, Elem}) ->
+	process_flag(trap_exit, true),
+	gen_server:cast(self(), {init, <<"Started">>}),
+	{ok, #graph_state{host = Host, elem= Elem}}.
+
+%% @hidden
+
+handle_cast({create, Datastores, RRAs, Options}, State) ->
+	Fn = filename:join([binary_to_list(State#graph_state.fn), orologio_utils:check_str(State#graph_state.elem) ++ ".rrd"]),
+	Command = ["create '", Fn, "' ", format_create_options(Options), " ",
+	           string:join(format_datastores(Datastores), " "), " ",
+	           string:join(format_archives(RRAs), " "), "\n"],
+	send_port(State#graph_state.mem, State#graph_state.rrd, State#graph_state.port, Command),
+	{noreply, State};
+handle_cast({update, DatastoreValues, Time}, State) ->
+	{Datastores, Values} = format_datastore_values(DatastoreValues),
+	Timestamp = case Time of
+		n ->
+			"N";
+		{Megaseconds, Seconds, _Microseconds} ->
+			integer_to_list((Megaseconds * 1000000) + Seconds);
+		Other when is_list(Other) ->
+			Other
+	end,
+	Fn = filename:join([binary_to_list(State#graph_state.fn), orologio_utils:check_str(State#graph_state.elem) ++ ".rrd"]),
+	Command = ["update '", Fn, "' -t ", string:join(Datastores, ":"), " ", Timestamp, ":",
+	           string:join(Values, ":"), "\n"],
+	%io:format("Graph: ~s~n", [string:join(Command, "")]),
+	send_port(State#graph_state.mem, State#graph_state.rrd, State#graph_state.port, Command),
+	{noreply, State};
+handle_cast({graph, FImg, DDef, VDef, GElem, Options}, State) ->
+	Fn = filename:join([binary_to_list(State#graph_state.fn), orologio_utils:check_str(State#graph_state.elem) ++ ".rrd"]),
+	Command = ["graph '", FImg, "' ", format_create_options(Options), " ",
+	           string:join(format_definition(DDef, Fn), " "), " ",
+	           string:join(format_vdefinition(VDef), " "), " ",
+	           string:join(format_graph(GElem), " "), "\n"],
+	%io:format("rrd graph: ~s~n", [string:join(Command, "")]),
+	send_port(State#graph_state.mem, State#graph_state.rrd, State#graph_state.port, Command),
+	{noreply, State};
+
+handle_cast({init, Act}, State) ->
+	Host = State#graph_state.host,
+	Elem = State#graph_state.elem,
+	RRDTool = orologio_utils:get_opt(rrdtool, os:find_executable("rrdtool")),
+	Cfg = orologio_utils:get_conf_all([Host, Elem], {graph, []}),
+	orologio_utils:event(join, {{fetch, Host, Elem}, self()}),
+	Dir = filename:absname(proplists:get_value(dir, Cfg, "rrddb")),
+	NDir = filename:join([Dir, orologio_utils:check_str(Host)]),
+	os:cmd("mkdir '" ++ NDir ++ "'"),
+	create({Host, Elem}, {proplists:get_value(elems, Cfg, []), proplists:get_value(archives, Cfg, []),
+	       proplists:get_value(options_create, Cfg, [])}),
+	Mem = proplists:get_value(mem, Cfg, false),
+	Port = start_port(Mem, RRDTool),
+	orologio_utils:log_report(info, [{orologio_utils:gen_name_mod({graph, State#graph_state.host, State#graph_state.elem}),
+                                          Act}]),
+	{noreply, State#graph_state{fn = list_to_binary(NDir), port = Port, mem = Mem,
+	                            rrd = orologio_utils:check_binary(RRDTool)}};
+
+handle_cast(recfg, State) ->
+  orologio_utils:event(leave, {{fetch, State#graph_state.host, State#graph_state.elem}, self()}),
+  catch port_command(State#graph_state.port, "quit\n"),
+  catch port_close(State#graph_state.port),
+  handle_cast({init, <<"Config reloaded">>}, State);
+
+handle_cast(_Msg, State) ->
+	{noreply, State}.
+
+%% @hidden
+handle_call(stop, _From, State) ->
+	{stop, normal, ok, State};
+handle_call(Request, _From, State) ->
+	{reply, {unknown_call, Request}, State}.
+
+%% @hidden
+handle_info({_Port, {data, {eol, Data}}}, State) ->
+  case io_lib:write_string(Data) of
+    "\"OK"++_ ->
+      ok;
+    "\"ERROR:"++Message ->
+      orologio_utils:log_report(warning, [{orologio_utils:gen_name_mod({graph, State#graph_state.host, State#graph_state.elem})
+                                , Message}]);
+    _Err ->
+      ok
+  end,
+  {noreply, State};
+handle_info(_Info, State) ->
+	%io:format("info: ~p~n", [Info]),
+	{noreply, State}.
+
+%% @hidden
+terminate(_Reason, State) ->
+	catch port_command(State#graph_state.port, "quit\n"),
+	catch port_close(State#graph_state.port),
+	orologio_utils:log_report(info, [{orologio_utils:gen_name_mod({graph, State#graph_state.host, State#graph_state.elem}),
+	                          "Stoped"}]),
+	ok.
+
+%% @hidden
+code_change(_OldVsn, State, _Extra) ->
+	{ok, State}.
+
+% internal functions
+
+start_port(true, RRDTool) ->
+  open_port({spawn_executable, orologio_utils:check_str(RRDTool)}, [{line, 1024}, {args, ["-"]}]);
+start_port(false, _RRDTool) ->
+  0.
+
+send_port(true, _RRDTool, Port, Comm) ->
+  port_command(Port, Comm);
+send_port(false, RRDTool, _Pt, Comm) ->
+  Port = open_port({spawn_executable, orologio_utils:check_str(RRDTool)}, [{line, 1024}, {args, ["-"]}]),
+  port_command(Port, Comm),
+  port_command(Port, "quit\n").
+  %port_close(Port).
+
+format_datastores(Datastores) ->
+	format_datastores(Datastores, []).
+
+format_datastores([], Acc) ->
+	lists:reverse(Acc);
+format_datastores([H | T], Acc) ->
+	case H of
+		{Name, DST, Arguments} when is_list(Name), is_atom(DST), is_list(Arguments) ->
+			case re:run(Name, "^[a-zA-Z0-9_]{1,19}$", [{capture, none}]) of
+				nomatch ->
+					throw({error, bad_datastore_name, Name});
+				match ->
+					case lists:member(DST, ?STORE_TYPES) of
+						false ->
+							throw({error, bad_datastore_type, DST});
+						true ->
+							format_datastores(T, [["DS:", Name, ":", atom_to_list(DST), ":",
+							                  format_arguments(DST, Arguments)] | Acc])
+					end
+			end;
+		_ ->
+			throw({error, bad_datastore, H})
+	end.
+
+format_arguments(DST, Arguments) ->
+	case DST of
+		'COMPUTE' ->
+			% TODO rpn expression validation
+			Arguments;
+		_ ->
+			case Arguments of
+				[Heartbeat, Min, Max] when is_integer(Heartbeat), is_integer(Min), is_integer(Max) ->
+					io_lib:format("~B:~B:~B", [Heartbeat, Min, Max]);
+				[Heartbeat, undefined, undefined] when is_integer(Heartbeat) ->
+					io_lib:format("~B:U:U", [Heartbeat]);
+				_ ->
+					throw({error, bad_datastore_arguments, Arguments})
+			end
+	end.
+
+format_archives(RRAs) ->
+	format_archives(RRAs, []).
+
+format_archives([], Acc) ->
+	lists:reverse(Acc);
+format_archives([H | T], Acc) ->
+	case H of
+		{CF, Xff, Steps, Rows} when CF =:= 'MAX'; CF =:= 'MIN'; CF =:= 'AVERAGE'; CF =:= 'LAST' ->
+			format_archives(T, [io_lib:format("RRA:~s:~.2f:~B:~B", [CF, Xff, Steps, Rows]) | Acc]);
+		_ ->
+			throw({error, bad_archive, H})
+	end.
+
+format_datastore_values(DSV) ->
+	format_datastore_values(DSV, [], []).
+
+format_datastore_values([], TAcc, Acc) ->
+	{lists:reverse(TAcc), lists:reverse(Acc)};
+format_datastore_values([H | T], TAcc, Acc) ->
+	case H of
+		{Name, Value} ->
+			case re:run(Name, "^[a-zA-Z0-9_]{1,19}$", [{capture, none}]) of
+				nomatch ->
+					throw({error, bad_datastore_name, Name});
+				match ->
+					format_datastore_values(T, [Name | TAcc], [value_to_list(Value) | Acc])
+			end;
+		_ ->
+			throw({error, bad_datastore_value, H})
+	end.
+
+format_definition([], _Filename) ->
+  [];
+format_definition([ H|T ], Filename) ->
+  case H of
+    {Name, Agr} when is_atom(Agr) ->
+      case re:run(Name, "^[a-zA-Z0-9_]{1,19}$", [{capture, none}]) of
+        nomatch ->
+          throw({error, bad_definition_name, Name});
+        match ->
+          case lists:member(Agr, ?GRAPH_FUN) of
+            false ->
+              throw({error, bad_definition_agr, Agr});
+            true ->
+              [io_lib:format("'DEF:~s=~s:~s:~s'", [Name,Filename,Name,Agr])|format_definition(T, Filename)]
+          end
+      end;
+    _ ->
+      throw({error, bad_definition, H})
+  end.
+  
+format_vdefinition([]) ->
+  [];
+format_vdefinition([ H|T ]) ->
+  case H of
+    {Name, VName, Agr} when is_atom(Agr) ->
+      case {value_check(Name, bad_definition_name), value_check(VName, bad_vdefinition_name)} of
+        {true, true} ->
+          case lists:member(Agr, ?GRAPH_FUN) of
+            false ->
+              throw({error, bad_vdefinition_agr, Agr});
+            true ->
+              [io_lib:format("VDEF:~s=~s,~s", [VName,Name,Agr])|format_vdefinition(T)]
+          end;
+        _ ->
+          throw({error, bad_definition_name, Name})
+      end;
+    _ ->
+      throw({error, bad_definition, H})
+  end.
+  
+format_graph([]) ->
+  [];
+format_graph([ H|T ]) ->
+  case H of
+    {Typ, Args} when is_atom(Typ) ->
+      case lists:member(Typ, ?GRAPH_TYP) of
+        true ->
+          ["'" ++ atom_to_list(Typ) ++ format_graph_args(Args) ++ "'"|format_graph(T)];
+        _ ->
+          throw({error, bad_graph_type})
+      end;
+    _ ->
+      throw({error, bad_graph, H})
+  end.
+  
+format_graph_args([]) ->
+[];
+format_graph_args([ H|T ]) ->
+  case H of
+    {width, Width} when is_integer(Width)->
+      [integer_to_list(Width)|format_graph_args(T)];
+    {text, Txt} when is_list(Txt)->
+      [":" ++ Txt|format_graph_args(T)];
+    {value, Val} when is_list(Val)->
+      case re:run(Val, "^[a-zA-Z0-9_]{1,19}$", [{capture, none}]) of
+        nomatch ->
+          throw({error, bad_graph_name, Val});
+        match ->
+          [":" ++ Val|format_graph_args(T)]
+      end;
+    {color, Col} when is_list(Col)->
+      ["#" ++ Col|format_graph_args(T)];
+    {display, Dis} when is_list(Dis)->
+      [":" ++ Dis|format_graph_args(T)];
+    _ ->
+      throw({error, bad_graph_args, H})
+  end.
+
+value_to_list(Value) when is_list(Value) ->
+	Value;
+value_to_list(Value) when is_integer(Value) ->
+	integer_to_list(Value);
+value_to_list(Value) when is_float(Value) ->
+	float_to_list(Value);
+value_to_list(Value) when is_binary(Value) ->
+	binary_to_list(Value).
+value_check(Value, Error) ->
+  case re:run(Value, "^[a-zA-Z0-9_]{1,19}$", [{capture, none}]) of
+    nomatch ->
+      throw({error, Error, Value});
+    match ->
+      true
+  end.
+
+format_create_options(Options) ->
+	Noverwrite = case proplists:get_value(noverwrite, Options) of
+		undefined ->
+			[];
+		_Nw ->
+			["--no-overwrite "]
+	end,
+	
+	StepOpt = case proplists:get_value(step, Options) of
+		undefined ->
+			[];
+		Step when is_integer(Step) ->
+			["--step ", integer_to_list(Step), " "]
+	end,
+
+	StartOpt = case proplists:get_value(start, Options) of
+		undefined ->
+			[];
+		Start ->
+			["--start ", value_to_list(Start), " "]
+	end,
+	
+	StopOpt = case proplists:get_value(stop, Options) of
+		undefined ->
+			[];
+		Stop ->
+			["--end ", value_to_list(Stop), " "]
+	end,
+	
+	LabelOpt = case proplists:get_value(label, Options) of
+		undefined ->
+			[];
+		Label ->
+			["--title '", value_to_list(Label), "' "]
+	end,
+	
+	VLabelOpt = case proplists:get_value(vlabel, Options) of
+		undefined ->
+			[];
+		VLabel ->
+			["--vertical-label '", value_to_list(VLabel), "' "]
+	end,
+	
+	DynLabel = case proplists:get_value(dynlabel, Options) of
+		undefined ->
+			[];
+		_DLabel ->
+			["--dynamic-labels "]
+	end,
+	
+	ScaleOpt = case proplists:get_value(scale, Options) of
+		undefined ->
+			[];
+		_Scale ->
+			["--alt-autoscale "]
+	end,
+	
+	FzMod = case proplists:get_value(fzmode, Options) of
+		undefined ->
+			[];
+		_Fz ->
+			["--full-size-mode "]
+	end,
+	
+	
+
+	
+	ImgOpt = case proplists:get_value(imgfmt, Options) of
+		undefined ->
+			[];
+		Img ->
+			["--imgformat ", Img, " "]
+	end,
+	
+	LLimitOpt = case proplists:get_value(llimit, Options) of
+		undefined ->
+			[];
+		LLimit ->
+			["--lower-limit ", LLimit, " "]
+	end,
+	
+	ULimitOpt = case proplists:get_value(ulimit, Options) of
+		undefined ->
+			[];
+		ULimit ->
+			["--upper-limit ", ULimit, " "]
+	end,
+	
+	BaseOpt = case proplists:get_value(base, Options) of
+		undefined ->
+			[];
+		Base ->
+			["--base ", Base, " "]
+	end,
+
+	lists:flatten([Noverwrite, StepOpt, StartOpt, StopOpt, LabelOpt, VLabelOpt, DynLabel, ScaleOpt, FzMod, ImgOpt,
+	              LLimitOpt, ULimitOpt, BaseOpt]).
+
+send_event({Host, Elem}, Msg) ->
+  gen_server:cast(orologio_utils:gen_name_mod({graph, Host, Elem}), Msg).

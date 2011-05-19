@@ -1,0 +1,9 @@
+-define(NAME_APP, orologio).
+-define(MOD_SPAWN, 'orologio-node_spawn').
+-define(MOD_TIMER, timer).
+-define(MOD_TIMER_CANCEL, cancel).
+-define(ELEM_DELIM1, $.).
+-define(ELEM_DELIM2, ".value ").
+-define(DEF_CFG, <<"defaults">>).
+-define(MOD_PART, "orologio_").
+-define(PORT_LINE, 1024).

@@ -1,0 +1,425 @@
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:55 ===
+          supervisor: {local,sasl_safe_sup}
+             started: [{pid,<0.39.0>},
+                       {name,alarm_handler},
+                       {mfargs,{alarm_handler,start_link,[]}},
+                       {restart_type,permanent},
+                       {shutdown,2000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:55 ===
+          supervisor: {local,sasl_safe_sup}
+             started: [{pid,<0.40.0>},
+                       {name,overload},
+                       {mfargs,{overload,start_link,[]}},
+                       {restart_type,permanent},
+                       {shutdown,2000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:55 ===
+          supervisor: {local,sasl_sup}
+             started: [{pid,<0.38.0>},
+                       {name,sasl_safe_sup},
+                       {mfargs,
+                           {supervisor,start_link,
+                               [{local,sasl_safe_sup},sasl,safe]}},
+                       {restart_type,permanent},
+                       {shutdown,infinity},
+                       {child_type,supervisor}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:55 ===
+          supervisor: {local,sasl_sup}
+             started: [{pid,<0.41.0>},
+                       {name,release_handler},
+                       {mfargs,{release_handler,start_link,[]}},
+                       {restart_type,permanent},
+                       {shutdown,2000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:55 ===
+         application: sasl
+          started_at: orologio@administrator
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:55 ===
+          supervisor: {local,fetch_sup}
+             started: [{pid,<0.123.0>},
+                       {name,{<<"orologio-node@gate">>,<<"multiping">>}},
+                       {mfargs,
+                           {orologio_fetch,start_link,
+                               [{<<"orologio-node@gate">>,<<"multiping">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:55 ===
+          supervisor: {local,fetch_sup}
+             started: [{pid,<0.127.0>},
+                       {name,
+                           {<<"orologio-node@administrator">>,
+                            <<"multiping">>}},
+                       {mfargs,
+                           {orologio_fetch,start_link,
+                               [{<<"orologio-node@administrator">>,
+                                 <<"multiping">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:55 ===
+          supervisor: {local,fetch_sup}
+             started: [{pid,<0.134.0>},
+                       {name,
+                           {<<"orologio-node@administrator">>,
+                            <<"multiping_kiev">>}},
+                       {mfargs,
+                           {orologio_fetch,start_link,
+                               [{<<"orologio-node@administrator">>,
+                                 <<"multiping_kiev">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:55 ===
+          supervisor: {local,fetch_sup}
+             started: [{pid,<0.139.0>},
+                       {name,
+                           {<<"orologio-node@administrator">>,
+                            <<"multiping_inet">>}},
+                       {mfargs,
+                           {orologio_fetch,start_link,
+                               [{<<"orologio-node@administrator">>,
+                                 <<"multiping_inet">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:55 ===
+          supervisor: {local,kernel_safe_sup}
+             started: [{pid,<0.145.0>},
+                       {name,pg2},
+                       {mfargs,{pg2,start_link,[]}},
+                       {restart_type,permanent},
+                       {shutdown,1000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:55 ===
+          supervisor: {local,fetch_sup}
+             started: [{pid,<0.146.0>},
+                       {name,
+                           {<<"orologio-node@administrator">>,
+                            <<"multiping_server">>}},
+                       {mfargs,
+                           {orologio_fetch,start_link,
+                               [{<<"orologio-node@administrator">>,
+                                 <<"multiping_server">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:55 ===
+          supervisor: {local,orologio_sup}
+             started: [{pid,<0.50.0>},
+                       {name,<<"fetch_sup">>},
+                       {mfargs,{orologio_sups,start_link,[fetch]}},
+                       {restart_type,permanent},
+                       {shutdown,20000},
+                       {child_type,supervisor}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:55 ===
+          supervisor: {local,kernel_safe_sup}
+             started: [{pid,<0.160.0>},
+                       {name,timer_server},
+                       {mfargs,{timer,start_link,[]}},
+                       {restart_type,permanent},
+                       {shutdown,1000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:55 ===
+          supervisor: {local,graph_sup}
+             started: [{pid,<0.224.0>},
+                       {name,{<<"orologio-node@gate">>,<<"multiping">>}},
+                       {mfargs,
+                           {orologio_graph,start_link,
+                               [{<<"orologio-node@gate">>,<<"multiping">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:55 ===
+          supervisor: {local,graph_sup}
+             started: [{pid,<0.225.0>},
+                       {name,
+                           {<<"orologio-node@administrator">>,
+                            <<"multiping">>}},
+                       {mfargs,
+                           {orologio_graph,start_link,
+                               [{<<"orologio-node@administrator">>,
+                                 <<"multiping">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:55 ===
+          supervisor: {local,graph_sup}
+             started: [{pid,<0.226.0>},
+                       {name,
+                           {<<"orologio-node@administrator">>,
+                            <<"multiping_kiev">>}},
+                       {mfargs,
+                           {orologio_graph,start_link,
+                               [{<<"orologio-node@administrator">>,
+                                 <<"multiping_kiev">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:55 ===
+          supervisor: {local,graph_sup}
+             started: [{pid,<0.227.0>},
+                       {name,
+                           {<<"orologio-node@administrator">>,
+                            <<"multiping_inet">>}},
+                       {mfargs,
+                           {orologio_graph,start_link,
+                               [{<<"orologio-node@administrator">>,
+                                 <<"multiping_inet">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:55 ===
+          supervisor: {local,graph_sup}
+             started: [{pid,<0.228.0>},
+                       {name,
+                           {<<"orologio-node@administrator">>,
+                            <<"multiping_server">>}},
+                       {mfargs,
+                           {orologio_graph,start_link,
+                               [{<<"orologio-node@administrator">>,
+                                 <<"multiping_server">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:55 ===
+          supervisor: {local,orologio_sup}
+             started: [{pid,<0.154.0>},
+                       {name,<<"graph_sup">>},
+                       {mfargs,{orologio_sups,start_link,[graph]}},
+                       {restart_type,permanent},
+                       {shutdown,20000},
+                       {child_type,supervisor}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:56 ===
+          supervisor: {local,limit_sup}
+             started: [{pid,<0.338.0>},
+                       {name,{<<"orologio-node@gate">>,<<"multiping">>}},
+                       {mfargs,
+                           {orologio_limit,start_link,
+                               [{<<"orologio-node@gate">>,<<"multiping">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:56 ===
+          supervisor: {local,limit_sup}
+             started: [{pid,<0.339.0>},
+                       {name,
+                           {<<"orologio-node@administrator">>,
+                            <<"multiping">>}},
+                       {mfargs,
+                           {orologio_limit,start_link,
+                               [{<<"orologio-node@administrator">>,
+                                 <<"multiping">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:56 ===
+          supervisor: {local,limit_sup}
+             started: [{pid,<0.340.0>},
+                       {name,
+                           {<<"orologio-node@administrator">>,
+                            <<"multiping_kiev">>}},
+                       {mfargs,
+                           {orologio_limit,start_link,
+                               [{<<"orologio-node@administrator">>,
+                                 <<"multiping_kiev">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:56 ===
+          supervisor: {local,limit_sup}
+             started: [{pid,<0.341.0>},
+                       {name,
+                           {<<"orologio-node@administrator">>,
+                            <<"multiping_inet">>}},
+                       {mfargs,
+                           {orologio_limit,start_link,
+                               [{<<"orologio-node@administrator">>,
+                                 <<"multiping_inet">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:56 ===
+          supervisor: {local,limit_sup}
+             started: [{pid,<0.342.0>},
+                       {name,
+                           {<<"orologio-node@administrator">>,
+                            <<"multiping_server">>}},
+                       {mfargs,
+                           {orologio_limit,start_link,
+                               [{<<"orologio-node@administrator">>,
+                                 <<"multiping_server">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:56 ===
+          supervisor: {local,orologio_sup}
+             started: [{pid,<0.229.0>},
+                       {name,<<"limit_sup">>},
+                       {mfargs,{orologio_sups,start_link,[limit]}},
+                       {restart_type,permanent},
+                       {shutdown,20000},
+                       {child_type,supervisor}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:56 ===
+          supervisor: {local,notify_sup}
+             started: [{pid,<0.464.0>},
+                       {name,{<<"orologio-node@gate">>,<<"multiping">>}},
+                       {mfargs,
+                           {orologio_notify,start_link,
+                               [{<<"orologio-node@gate">>,<<"multiping">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:56 ===
+          supervisor: {local,notify_sup}
+             started: [{pid,<0.465.0>},
+                       {name,
+                           {<<"orologio-node@administrator">>,<<"log-test">>}},
+                       {mfargs,
+                           {orologio_notify,start_link,
+                               [{<<"orologio-node@administrator">>,
+                                 <<"log-test">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:56 ===
+          supervisor: {local,notify_sup}
+             started: [{pid,<0.466.0>},
+                       {name,
+                           {<<"orologio-node@administrator">>,
+                            <<"multiping">>}},
+                       {mfargs,
+                           {orologio_notify,start_link,
+                               [{<<"orologio-node@administrator">>,
+                                 <<"multiping">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:56 ===
+          supervisor: {local,notify_sup}
+             started: [{pid,<0.467.0>},
+                       {name,
+                           {<<"orologio-node@administrator">>,
+                            <<"multiping_kiev">>}},
+                       {mfargs,
+                           {orologio_notify,start_link,
+                               [{<<"orologio-node@administrator">>,
+                                 <<"multiping_kiev">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:56 ===
+          supervisor: {local,notify_sup}
+             started: [{pid,<0.468.0>},
+                       {name,
+                           {<<"orologio-node@administrator">>,
+                            <<"multiping_inet">>}},
+                       {mfargs,
+                           {orologio_notify,start_link,
+                               [{<<"orologio-node@administrator">>,
+                                 <<"multiping_inet">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:56 ===
+          supervisor: {local,notify_sup}
+             started: [{pid,<0.469.0>},
+                       {name,
+                           {<<"orologio-node@administrator">>,
+                            <<"multiping_server">>}},
+                       {mfargs,
+                           {orologio_notify,start_link,
+                               [{<<"orologio-node@administrator">>,
+                                 <<"multiping_server">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:56 ===
+          supervisor: {local,notify_sup}
+             started: [{pid,<0.470.0>},
+                       {name,{<<"default">>,<<"default">>}},
+                       {mfargs,
+                           {orologio_notify,start_link,
+                               [{<<"default">>,<<"default">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:56 ===
+          supervisor: {local,orologio_sup}
+             started: [{pid,<0.343.0>},
+                       {name,<<"notify_sup">>},
+                       {mfargs,{orologio_sups,start_link,[notify]}},
+                       {restart_type,permanent},
+                       {shutdown,20000},
+                       {child_type,supervisor}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:56 ===
+          supervisor: {local,checknod_sup}
+             started: [{pid,<0.587.0>},
+                       {name,{<<"default">>,<<"default">>}},
+                       {mfargs,
+                           {orologio_checknod,start_link,
+                               [{<<"default">>,<<"default">>}]}},
+                       {restart_type,permanent},
+                       {shutdown,5000},
+                       {child_type,worker}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:56 ===
+          supervisor: {local,orologio_sup}
+             started: [{pid,<0.471.0>},
+                       {name,<<"checknod_sup">>},
+                       {mfargs,{orologio_sups,start_link,[checknod]}},
+                       {restart_type,permanent},
+                       {shutdown,20000},
+                       {child_type,supervisor}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:56 ===
+         application: orologio
+          started_at: orologio@administrator
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:56 ===
+          supervisor: {local,inet_gethost_native_sup}
+             started: [{pid,<0.594.0>},{mfa,{inet_gethost_native,init,[[]]}}]
+
+=PROGRESS REPORT==== 12-Apr-2011::11:28:56 ===
+          supervisor: {local,kernel_safe_sup}
+             started: [{pid,<0.593.0>},
+                       {name,inet_gethost_native_sup},
+                       {mfargs,{inet_gethost_native,start_link,[]}},
+                       {restart_type,temporary},
+                       {shutdown,1000},
+                       {child_type,worker}]

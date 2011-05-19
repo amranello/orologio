@@ -1,0 +1,38 @@
+{fetch, [
+         {ignore, true},
+         {parse_elem, parse_elem_munin},
+         {subsriber, true}
+        ]}.
+{limit, [
+         {ignore, true},
+         {subsriber, true},
+         {msg, grp}
+        ]}.
+{checknod, [
+            {ignore, true}
+           ]}.
+{notify, [
+           {subsriber, true},
+           {dir, "/home/amranello/projects/orologio/agents"},
+	   {fmsg, "\"Host: $host Agent: $elem Time: $time Msg: $msg \""},
+	   {allow, "(Time > {8, 0, 0}) and (Time < {22, 0, 0})."},
+	   {allow_ignore, [
+	                  ]}
+          ]}.
+{graph, [
+         {ignore, true},
+         {mem, true},
+         {dir, "/home/amranello/projects/orologio/rrddb"},
+         {archives, [
+                      {'AVERAGE', 0.5, 1, 1440}, {'MIN', 0.5, 1, 1440}, {'MAX', 0.5, 1, 1440}, {'LAST', 0.5, 1, 1440},
+                      {'AVERAGE', 0.5, 10, 288}, {'MIN', 0.5, 10, 288}, {'MAX', 0.5, 10, 288}, {'LAST', 0.5, 10, 288},
+                      {'AVERAGE', 0.5, 60, 168}, {'MIN', 0.5, 60, 168}, {'MAX', 0.5, 60, 168}, {'LAST', 0.5, 60, 168}
+                    ]},
+         {options_create, [
+       			   {noverwrite, 1},
+	            	   {step, 60}
+	                  ]},
+	 {options_graph, [
+	                  {imgfmt, "png"}
+	                 ]}
+	 ]}.
